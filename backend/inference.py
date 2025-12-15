@@ -92,8 +92,8 @@ class ModelServer:
             fake_prob = float(probs[fake_idx])
             real_prob = float(probs[real_idx])
             
-            print("fake probability", fake_prob);
-            print(real_prob);
+            # print("fake probability", fake_prob);
+            # print(real_prob);
 
             if fake_prob >= FAKE_THRESHOLD:
                 label_val = "FAKE"

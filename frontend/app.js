@@ -5,10 +5,15 @@ const newsText = document.getElementById("newsText");
 const resultDiv = document.getElementById("result");
 const historyDiv = document.getElementById("history");
 const statusSpan = document.getElementById("status");
+const detailModal = document.getElementById("detailModal");
+const modalOverlay = document.getElementById("modalOverlay");
+const closeModalBtn = document.getElementById("closeModalBtn");
 
 checkBtn.addEventListener("click", handlePredict);
 window.addEventListener("DOMContentLoaded", loadHistory);
 window.addEventListener("DOMContentLoaded", restoreLastResult);
+closeModalBtn.addEventListener("click", closeModal);
+modalOverlay.addEventListener("click", closeModal);
 
 async function handlePredict() {
     const title = newsTitle.value.trim();
@@ -91,7 +96,7 @@ function renderHistory(items) {
             const snippet = (item.content || "").slice(0, 140).trim();
             const title = item.title && item.title.trim() ? item.title : "Untitled";
             return `
-                <div class="history-item">
+                <div class="history-item" onclick='openModal(${JSON.stringify(item)})' style="cursor: pointer;">
                     <div class="history-header">
                         <div class="history-title">${title}</div>
                         <span class="badge ${badgeClass}">${item.label}</span>
@@ -158,4 +163,24 @@ function restoreLastResult() {
     } catch (e) {
         console.warn("Could not restore last prediction", e);
     }
+}
+
+function openModal(item) {
+    const title = item.title && item.title.trim() ? item.title : "Untitled";
+    const badgeClass = item.label === "REAL" ? "real" : "fake";
+    const probPct = (item.probability * 100).toFixed(2);
+    
+    document.getElementById("modalItemTitle").textContent = title;
+    document.getElementById("modalItemLabel").className = `badge ${badgeClass}`;
+    document.getElementById("modalItemLabel").textContent = item.label;
+    document.getElementById("modalItemProb").textContent = `${probPct}%`;
+    document.getElementById("modalItemContent").textContent = item.content || "N/A";
+    document.getElementById("modalModelVersion").textContent = item.model_version || "N/A";
+    document.getElementById("modalCreatedAt").textContent = new Date(item.created_at).toLocaleString();
+    
+    detailModal.style.display = "flex";
+}
+
+function closeModal() {
+    detailModal.style.display = "none";
 }
