@@ -1,0 +1,45 @@
+# Python artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.sqlite3
+*.db
+*.db-journal
+*.log
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Jupyter and experiment outputs
+.ipynb_checkpoints/
+*.ipynb
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Node / frontend
+node_modules/
+dist/
+build/
+
+# Python packaging
+*.egg-info/
+.eggs/
+
+# Model artifacts
+backend/model_artifacts/
+
+# Data files (keep scripts)
+experiments/data/*.csv
+
+# Local history database
+backend/history.db
+
+# VS Code
+.vscode/

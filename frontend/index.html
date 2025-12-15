@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>Fake News Detection</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&display=swap"
+			rel="stylesheet"
+		/>
+		<style>
+			:root {
+				--bg: #0f172a;
+				--panel: #0b1224;
+				--card: #111c34;
+				--accent: #7c3aed;
+				--accent-2: #38bdf8;
+				--success: #22c55e;
+				--danger: #ef4444;
+				--text: #e2e8f0;
+				--muted: #94a3b8;
+			}
+			* {
+				box-sizing: border-box;
+			}
+			body {
+				font-family: "Manrope", system-ui, -apple-system, sans-serif;
+				background: radial-gradient(
+						circle at 20% 20%,
+						rgba(124, 58, 237, 0.15),
+						transparent 30%
+					),
+					radial-gradient(
+						circle at 80% 0%,
+						rgba(56, 189, 248, 0.18),
+						transparent 35%
+					),
+					var(--bg);
+				color: var(--text);
+				margin: 0;
+				min-height: 100vh;
+				padding: 32px 18px 48px;
+			}
+			.shell {
+				max-width: 1100px;
+				margin: 0 auto;
+			}
+			header {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				margin-bottom: 20px;
+			}
+			.title {
+				display: flex;
+				align-items: center;
+				gap: 12px;
+				font-weight: 700;
+				font-size: 22px;
+				letter-spacing: 0.4px;
+			}
+			.pill {
+				padding: 6px 10px;
+				border-radius: 999px;
+				background: rgba(124, 58, 237, 0.18);
+				color: var(--accent-2);
+				font-size: 12px;
+				font-weight: 700;
+				text-transform: uppercase;
+				letter-spacing: 0.8px;
+			}
+			.grid {
+				display: grid;
+				grid-template-columns: 2fr 1.2fr;
+				gap: 18px;
+			}
+			@media (max-width: 900px) {
+				.grid {
+					grid-template-columns: 1fr;
+				}
+			}
+			.card {
+				background: linear-gradient(
+					145deg,
+					rgba(17, 28, 52, 0.9),
+					rgba(11, 18, 36, 0.9)
+				);
+				border: 1px solid rgba(255, 255, 255, 0.05);
+				border-radius: 14px;
+				padding: 18px;
+				box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+			}
+			.card h2 {
+				margin: 0 0 14px;
+				font-size: 18px;
+				letter-spacing: 0.3px;
+			}
+			label {
+				display: block;
+				font-size: 13px;
+				color: var(--muted);
+				margin-bottom: 6px;
+			}
+			input,
+			textarea {
+				width: 100%;
+				padding: 12px 14px;
+				border-radius: 10px;
+				border: 1px solid rgba(255, 255, 255, 0.06);
+				background: rgba(255, 255, 255, 0.03);
+				color: var(--text);
+				font-size: 14px;
+			}
+			textarea {
+				min-height: 200px;
+				resize: vertical;
+			}
+			input:focus,
+			textarea:focus {
+				outline: 1px solid var(--accent);
+			}
+			.actions {
+				display: flex;
+				gap: 10px;
+				align-items: center;
+				margin-top: 10px;
+			}
+			button {
+				padding: 12px 14px;
+				border: none;
+				border-radius: 10px;
+				background: linear-gradient(135deg, var(--accent), var(--accent-2));
+				color: white;
+				font-weight: 700;
+				cursor: pointer;
+				flex: 1;
+				transition: transform 0.08s ease, opacity 0.1s ease;
+			}
+			button:disabled {
+				opacity: 0.6;
+				cursor: not-allowed;
+			}
+			button:hover:not(:disabled) {
+				transform: translateY(-1px);
+			}
+			.result {
+				margin-top: 12px;
+				padding: 14px;
+				border-radius: 12px;
+				border: 1px solid rgba(255, 255, 255, 0.07);
+				background: rgba(255, 255, 255, 0.02);
+			}
+			.badge {
+				display: inline-block;
+				padding: 6px 10px;
+				border-radius: 999px;
+				font-weight: 700;
+				font-size: 12px;
+				letter-spacing: 0.5px;
+			}
+			.badge.real {
+				background: rgba(34, 197, 94, 0.15);
+				color: var(--success);
+			}
+			.badge.fake {
+				background: rgba(239, 68, 68, 0.18);
+				color: var(--danger);
+			}
+			.prob {
+				font-size: 32px;
+				font-weight: 700;
+				margin: 6px 0;
+			}
+			.muted {
+				color: var(--muted);
+				font-size: 13px;
+			}
+			.tokens {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 6px;
+				margin-top: 10px;
+			}
+			.token {
+				background: rgba(255, 255, 255, 0.05);
+				padding: 6px 10px;
+				border-radius: 8px;
+				font-size: 12px;
+			}
+			.error {
+				color: var(--danger);
+			}
+			.history-list {
+				display: grid;
+				gap: 10px;
+				max-height: 520px;
+				overflow-y: auto;
+				padding-right: 4px;
+			}
+			/* Custom scrollbar */
+			.history-list::-webkit-scrollbar {
+				width: 10px;
+			}
+			.history-list::-webkit-scrollbar-track {
+				background: rgba(255, 255, 255, 0.04);
+				border-radius: 999px;
+			}
+			.history-list::-webkit-scrollbar-thumb {
+				background: linear-gradient(180deg, var(--accent), var(--accent-2));
+				border-radius: 999px;
+			}
+			.history-list::-webkit-scrollbar-thumb:hover {
+				background: linear-gradient(180deg, var(--accent-2), var(--accent));
+			}
+			/* Firefox */
+			.history-list {
+				scrollbar-width: thin;
+				scrollbar-color: var(--accent) rgba(255, 255, 255, 0.05);
+			}
+			.history-item {
+				padding: 12px;
+				border-radius: 12px;
+				border: 1px solid rgba(255, 255, 255, 0.05);
+				background: rgba(255, 255, 255, 0.02);
+			}
+			.history-header {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				gap: 8px;
+			}
+			.history-title {
+				font-weight: 700;
+				font-size: 14px;
+			}
+			.history-snippet {
+				margin: 6px 0;
+				color: var(--muted);
+				font-size: 13px;
+			}
+			.history-meta {
+				display: flex;
+				gap: 10px;
+				font-size: 12px;
+				color: var(--muted);
+			}
+			footer {
+				margin-top: 22px;
+				text-align: center;
+				color: var(--muted);
+				font-size: 13px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="shell">
+			<header>
+				<div class="title">
+					Fake News Detection <span class="pill">NLP</span>
+				</div>
+				<div class="muted">Model: baseline_v0.1</div>
+			</header>
+
+			<div class="grid">
+				<section class="card">
+					<h2>Analyze Article</h2>
+					<label for="newsTitle">Title (optional)</label>
+					<input id="newsTitle" type="text" placeholder="Headline" />
+
+					<label for="newsText" style="margin-top: 10px">Content</label>
+					<textarea
+						id="newsText"
+						placeholder="Paste news article text..."
+					></textarea>
+
+					<div class="actions">
+						<button id="checkBtn">Run Prediction</button>
+						<span id="status" class="muted"></span>
+					</div>
+
+					<div id="result" class="result" style="display: none"></div>
+				</section>
+
+				<section class="card">
+					<h2>Recent History</h2>
+					<div id="history" class="history-list"></div>
+				</section>
+			</div>
+
+			<footer>Final Year Project · Fake News Detection</footer>
+		</div>
+
+		<script src="app.js"></script>
+	</body>
+</html>
