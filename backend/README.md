@@ -61,6 +61,6 @@
 -  python experiments/data/prepare_dataset.py
 - python experiments/train_baseline.py --data-path experiments/data/data.csv --out-dir backend/model_artifacts --model-version baseline_v0.1
 
-
-- pip install -r backend/requirements.txt
-- python -m uvicorn app:app --reload --host 0.0.0.0 --port 8000                 
+- cd backend
+- pip install -r requirements.txt
+- python -m uvicorn app:app --reload --host 0.0.0.0 --port 8000                

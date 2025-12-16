@@ -32,9 +32,6 @@ build/
 *.egg-info/
 .eggs/
 
-# Model artifacts
-backend/model_artifacts/
-
 # Data files (keep scripts)
 experiments/data/*.csv
 
