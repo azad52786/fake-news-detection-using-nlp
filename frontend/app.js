@@ -8,12 +8,35 @@ const statusSpan = document.getElementById("status");
 const detailModal = document.getElementById("detailModal");
 const modalOverlay = document.getElementById("modalOverlay");
 const closeModalBtn = document.getElementById("closeModalBtn");
+const themeToggle = document.getElementById("themeToggle");
 
 checkBtn.addEventListener("click", handlePredict);
 window.addEventListener("DOMContentLoaded", loadHistory);
 window.addEventListener("DOMContentLoaded", restoreLastResult);
+window.addEventListener("DOMContentLoaded", initTheme);
+if (themeToggle) themeToggle.addEventListener("click", toggleTheme);
 closeModalBtn.addEventListener("click", closeModal);
 modalOverlay.addEventListener("click", closeModal);
+
+function applyTheme(theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+    if (themeToggle) themeToggle.textContent = theme === "light" ? "Dark" : "Light";
+}
+
+function initTheme() {
+    let theme = localStorage.getItem("theme");
+    if (!theme) {
+        theme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    applyTheme(theme);
+}
+
+function toggleTheme() {
+    const current = document.documentElement.getAttribute("data-theme") || "dark";
+    const next = current === "dark" ? "light" : "dark";
+    applyTheme(next);
+    try { localStorage.setItem("theme", next); } catch {}
+}
 
 async function handlePredict() {
     const title = newsTitle.value.trim();
