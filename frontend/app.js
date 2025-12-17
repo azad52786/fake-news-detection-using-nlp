@@ -10,10 +10,17 @@ const modalOverlay = document.getElementById("modalOverlay");
 const closeModalBtn = document.getElementById("closeModalBtn");
 const themeToggle = document.getElementById("themeToggle");
 
-checkBtn.addEventListener("click", handlePredict);
+checkBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    handlePredict();
+});
+console.log("✓ Button listener attached");
+
 window.addEventListener("DOMContentLoaded", loadHistory);
-window.addEventListener("DOMContentLoaded", restoreLastResult);
+console.log("✓ History listener attached");
 window.addEventListener("DOMContentLoaded", initTheme);
+console.log("✓ Theme listener attached");
 if (themeToggle) themeToggle.addEventListener("click", toggleTheme);
 closeModalBtn.addEventListener("click", closeModal);
 modalOverlay.addEventListener("click", closeModal);
@@ -41,6 +48,7 @@ function toggleTheme() {
 async function handlePredict() {
     const title = newsTitle.value.trim();
     const content = newsText.value.trim();
+    console.log("handlePredict called", { title, content });
     if (!content) {
         renderError("Please enter some news content.");
         return;
@@ -53,17 +61,22 @@ async function handlePredict() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ title, content })
         });
-
+        
+        console.log(res);
+        // return;
+        console.log("Response status:", res.status);
         if (!res.ok) {
             const msg = (await res.json())?.detail || "Server error";
             throw new Error(msg);
         }
 
         const data = await res.json();
+        console.log("Prediction result:", data);
         renderResult(data);
+        // await loadHistory();
         prependHistory(data, content, title);
-        persistLastResult(data, content, title);
     } catch (err) {
+        console.error("Error in handlePredict:", err);
         renderError(err.message || "Something went wrong.");
     } finally {
         setLoading(false);
@@ -71,13 +84,18 @@ async function handlePredict() {
 }
 
 async function loadHistory() {
+    console.log("loadHistory called");
     historyDiv.innerHTML = "<span class='muted'>Loading history...</span>";
     try {
+        console.log("Calling API:", `${API_BASE}/history?limit=20`);
         const res = await fetch(`${API_BASE}/history?limit=20`);
+        console.log("History response status:", res.status);
         if (!res.ok) throw new Error("Failed to load history");
         const data = await res.json();
+        console.log("History loaded:", data);
         renderHistory(data.items || []);
     } catch (err) {
+        console.error("Error loading history:", err);
         historyDiv.innerHTML = `<span class='error'>${err.message}</span>`;
     }
 }
@@ -141,6 +159,11 @@ function prependHistory(item, content, title) {
     const newItem = document.createElement('div');
     const badgeClass = item.label === "REAL" ? "real" : "fake";
     const snippet = content.slice(0, 140).trim();
+    const modalPayload = {
+        ...item,
+        content,
+        title: title && title.trim() ? title : 'Untitled'
+    };
     newItem.className = 'history-item';
     newItem.innerHTML = `
         <div class="history-header">
@@ -154,37 +177,13 @@ function prependHistory(item, content, title) {
             <span>${new Date(item.created_at).toLocaleString()}</span>
         </div>
     `;
+    newItem.style.cursor = 'pointer';
+    newItem.addEventListener('click', () => openModal(modalPayload));
     historyDiv.prepend(newItem);
     if (existing.length > 0) {
         while (historyDiv.children.length > 20) {
             historyDiv.removeChild(historyDiv.lastChild);
         }
-    }
-}
-
-function persistLastResult(item, content, title) {
-    const payload = {
-        item,
-        content,
-        title,
-    };
-    try {
-        localStorage.setItem("lastPrediction", JSON.stringify(payload));
-    } catch (e) {
-        console.warn("Could not persist last prediction", e);
-    }
-}
-
-function restoreLastResult() {
-    try {
-        const raw = localStorage.getItem("lastPrediction");
-        if (!raw) return;
-        const parsed = JSON.parse(raw);
-        if (parsed?.item) {
-            renderResult(parsed.item);
-        }
-    } catch (e) {
-        console.warn("Could not restore last prediction", e);
     }
 }
 

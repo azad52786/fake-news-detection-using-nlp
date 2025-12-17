@@ -33,10 +33,10 @@ build/
 .eggs/
 
 # Data files (keep scripts)
-experiments/data/*.csv
+backend and model/experiments/data/*.csv
 
 # Local history database
-backend/history.db
+backend and model/backend/history.db
 
 # VS Code
 .vscode/

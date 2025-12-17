@@ -116,6 +116,26 @@
 			textarea {
 				min-height: 200px;
 				resize: vertical;
+				overflow-y: auto;
+			}
+			/* Custom scrollbar for textarea */
+			textarea::-webkit-scrollbar {
+				width: 10px;
+			}
+			textarea::-webkit-scrollbar-track {
+				background: rgba(255, 255, 255, 0.04);
+				border-radius: 999px;
+			}
+			textarea::-webkit-scrollbar-thumb {
+				background: linear-gradient(180deg, var(--accent), var(--accent-2));
+				border-radius: 999px;
+			}
+			textarea::-webkit-scrollbar-thumb:hover {
+				background: linear-gradient(180deg, var(--accent-2), var(--accent));
+			}
+			textarea {
+				scrollbar-width: thin;
+				scrollbar-color: var(--accent) rgba(255, 255, 255, 0.05);
 			}
 			input:focus,
 			textarea:focus {
@@ -124,8 +144,10 @@
 			.actions {
 				display: flex;
 				gap: 10px;
-				align-items: center;
+				align-items: stretch;
 				margin-top: 10px;
+				flex-wrap: wrap;
+				flex-direction: column;
 			}
 			button {
 				padding: 12px 14px;
@@ -135,7 +157,8 @@
 				color: white;
 				font-weight: 700;
 				cursor: pointer;
-				flex: 1;
+				flex: 1 1 100%;
+				width: 100%;
 				transition: transform 0.08s ease, opacity 0.1s ease;
 			}
 			button:disabled {
@@ -521,10 +544,9 @@
 					></textarea>
 
 					<div class="actions">
-						<button id="checkBtn">Run Prediction</button>
+						<button id="checkBtn" type="button">Run Prediction</button>
 						<span id="status" class="muted"></span>
 					</div>
-
 					<div id="result" class="result" style="display: none"></div>
 				</section>
 
